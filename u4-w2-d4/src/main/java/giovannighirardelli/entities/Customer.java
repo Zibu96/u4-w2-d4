@@ -1,4 +1,4 @@
-package giovannighirardelli;
+package giovannighirardelli.entities;
 
 import java.util.Random;
 
@@ -10,7 +10,7 @@ public class Customer {
     public Customer(String name, Integer tier) {
         Random rndm = new Random();
         this.id = rndm.nextLong(100000, 100000000);
-        this.name = name + " " + this.id;
+        this.name = name;
         this.tier = tier;
     }
 

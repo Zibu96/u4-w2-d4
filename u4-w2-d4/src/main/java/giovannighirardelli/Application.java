@@ -1,10 +1,14 @@
 package giovannighirardelli;
 
+import com.github.javafaker.Faker;
+import giovannighirardelli.entities.Customer;
+import giovannighirardelli.entities.Order;
+import giovannighirardelli.entities.Product;
+
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class Application {
 
@@ -26,9 +30,9 @@ public class Application {
 
         Supplier<Product> productSupplier = () -> new Product("Prodotto", randomCategory.get(), randomPrice.get());
 
-        List<Product> prodotti = new ArrayList<>();
+        List<Product> prodottiList = new ArrayList<>();
         for (int i = 0; i < 50; i++) {
-            prodotti.add(productSupplier.get());
+            prodottiList.add(productSupplier.get());
         }
 
         //        CUSTOMERS
@@ -38,12 +42,21 @@ public class Application {
             return random.nextInt(1, 5);
 
         };
+        Supplier<String> randomName = () -> {
+            Faker faker = new Faker();
+            return faker.elderScrolls().firstName();
+        };
 
-        Supplier<Customer> customerSupplier = () -> new Customer("Customer", randomTier.get());
+        Supplier<Customer> customerSupplier = () ->
+
+
+                new Customer(randomName.get(), randomTier.get());
         List<Customer> customer = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             customer.add(customerSupplier.get());
         }
+
+
         System.out.println(customer);
 
         //      ORDINI
@@ -68,12 +81,43 @@ public class Application {
         };
 
 
-        Supplier<Order> orderSupplier = () -> new Order("Consegnato", randomOrderDate.get(), randomDeliveryDate.get(), prodotti, customer.get(1));
-        List<Order> order = new ArrayList<>();
+        Supplier<Order> orderSupplier = () -> new Order("Consegnato", randomOrderDate.get(), randomDeliveryDate.get(), prodottiList, customer.get(1));
+        List<Order> orderList = new ArrayList<>();
         for (int i = 0; i < 40; i++) {
-            order.add(orderSupplier.get());
+            orderList.add(orderSupplier.get());
 
         }
 
+
+//        ESERCIZIO1
+        System.out.println("ESERCIZIO1");
+        Map<String, List<Order>> clientOrder = orderList.stream().collect(Collectors.groupingBy(order -> order.getCustomer().getName()));
+        clientOrder.forEach((nome, listaOrdini) -> System.out.println("Cliente " + nome + "Ha ordinato" + listaOrdini));
+
+//        ESERCIZIO2
+
+        System.out.println("ESERCIZIO2");
+        Map<Customer, Double> spesaCliente = orderList.stream().collect(Collectors.groupingBy(order -> order.getCustomer(),
+                Collectors.summingDouble(order -> order.getProducts().stream().mapToDouble(prodotti -> prodotti.getPrice()).sum())));
+        spesaCliente.forEach((nome, sommaProdotti) -> System.out.println("il cliente " + nome + "ha speso " + sommaProdotti));
+
+//      ESERCIZIO3
+        System.out.println("ESERCIZIO3");
+        List<Product> moreExpensive = prodottiList.stream().sorted(Comparator.comparingDouble(Product::getPrice).reversed()).limit(5).toList();
+        moreExpensive.forEach(product -> System.out.println(product));
+
+//        ESERCIZIO4
+        System.out.println("ESERCIZIO4");
+        Map<Long, Double> mediaImporti = orderList.stream().collect(Collectors.groupingBy(order ->
+                order.getId(), Collectors.averagingDouble(order -> order.getProducts().stream().mapToDouble(prodotti -> prodotti.getPrice()).sum())));
+
+        mediaImporti.forEach((ordine, media) -> System.out.println("L'ordine " + ordine + "Ha una spesa media di " + media));
+
+//        ESERCIZIO5
+        System.out.println("ESERCIZIO5");
+//        Map<List<Product>, Double> prezziCategorie = prodottiList.stream().sorted(Comparator.comparing(product -> product.getCategory())).toList(),
+
+        List<Product> prezziCategorie = prodottiList.stream().sorted(Comparator.comparing(product -> product.getCategory())).toList();
+        prezziCategorie.forEach(product -> System.out.println("gli oggetti della categoria " + product));
     }
 }

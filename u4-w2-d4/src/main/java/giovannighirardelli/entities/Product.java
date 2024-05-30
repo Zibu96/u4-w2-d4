@@ -1,4 +1,4 @@
-package giovannighirardelli;
+package giovannighirardelli.entities;
 
 import java.util.Random;
 
