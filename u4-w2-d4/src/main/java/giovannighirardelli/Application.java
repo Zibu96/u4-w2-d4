@@ -115,9 +115,9 @@ public class Application {
 
 //        ESERCIZIO5
         System.out.println("ESERCIZIO5");
-//        Map<List<Product>, Double> prezziCategorie = prodottiList.stream().sorted(Comparator.comparing(product -> product.getCategory())).toList(),
-
-        List<Product> prezziCategorie = prodottiList.stream().sorted(Comparator.comparing(product -> product.getCategory())).toList();
-        prezziCategorie.forEach(product -> System.out.println("gli oggetti della categoria " + product));
+        Map<String, Double> prezziCategorie = prodottiList.stream().collect(Collectors.groupingBy(product -> product.getCategory(), Collectors.summingDouble(product -> product.getPrice())));
+        prezziCategorie.forEach((nome, prezzo) -> System.out.println("La categoria " + nome + "ha dei prodotti con un prezzo medio di: "));
+//        List<Product> prezziCategorie = prodottiList.stream().sorted(Comparator.comparing(product -> product.getCategory())).toList();
+//        prezziCategorie.forEach(product -> System.out.println("gli oggetti della categoria " + product));
     }
 }
